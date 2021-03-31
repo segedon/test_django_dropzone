@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% load  dropzone_tags %}
+{% load i18n %}
+
+{% block styles %}
+    {% include_dropzone_css %}
+{% endblock %}
+{% block scripts %}
+        {% include_dropzone_js %}
+{% endblock %}
+{% block content %}
+    <p>Объект {{ object.name }}</p>
+    {% form_with_files_for object %}
+{% endblock %}

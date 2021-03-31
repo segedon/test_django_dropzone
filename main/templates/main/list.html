@@ -1,0 +1,10 @@
+{% extends 'main/base.html' %}
+{% block content %}
+    <p><a href="#">Добавить объект</a></p>
+    <p>Список объектов:</p>
+    <ul>
+    {% for object in objects %}
+        <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

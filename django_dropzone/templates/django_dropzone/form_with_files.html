@@ -1,0 +1,49 @@
+<form id="dropzone_form" class="dropzone" action="{{ upload_url }}">
+    {% csrf_token %}
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Dropzone.autoDiscover = false;
+        Dropzone.options.myAwesomeDropzone = false;
+        myDropzone = new Dropzone('form#dropzone_form', {
+            addRemoveLinks: true,
+            dictRemoveFile: 'Delete file',
+            // dictDefaultMessage: 'Пренесите файлы сюда для загрузки'
+        });
+
+        myDropzone.on('success', function(file, response) {
+            file['delete_url'] = response.delete_url
+            file['download_url'] = response.download_url
+           console.log(response.delete_url)
+        });
+
+        myDropzone.on('complete', function (file) {
+           var downloadLink = document.createElement('a');
+           downloadLink.setAttribute('href', file.download_url);
+           downloadLink.setAttribute('target', '_blank');
+           downloadLink.setAttribute('class', 'dz-remove');
+           downloadLink.innerHTML = 'Download file';
+           file.previewTemplate.appendChild(downloadLink);
+        });
+
+        myDropzone.on('removedfile', function(file) {
+            fetch(file.delete_url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }});
+        });
+        {% for file in files %}
+            var mockFile = {
+                name: '{{ file.file.name }}',
+                size: {{ file.file.size }},
+                delete_url: '{{ file.delete_url }}',
+                download_url: '{{ file.file.url }}'
+            };
+            myDropzone.emit('addedfile', mockFile);
+            myDropzone.emit('complete', mockFile);
+        {% endfor %}
+
+    });
+</script>
